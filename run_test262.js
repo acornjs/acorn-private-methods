@@ -6,12 +6,9 @@ const run = require("test262-parser-runner")
 const parse = require(".").parse
 
 const unsupportedFeatures = [
-  "async-iteration",
   "BigInt",
   "class-fields-private",
   "class-fields-public",
-  "object-rest",
-  "object-spread",
   "optional-catch-binding",
   "regexp-lookbehind",
   "regexp-named-groups",
@@ -23,7 +20,7 @@ const implementedFeatures = [
 ]
 
 run(
-  (content, options) => parse(content, {sourceType: options.sourceType, ecmaVersion: 9, plugins: { classFields: true }}),
+  (content, options) => parse(content, {sourceType: options.sourceType, ecmaVersion: 9, plugins: { privateMethods: true }}),
   {
     testsDirectory: path.dirname(require.resolve("test262/package.json")),
     skip: test => (!test.attrs.features || !implementedFeatures.some(f => test.attrs.features.includes(f)) || unsupportedFeatures.some(f => test.attrs.features.includes(f))),
