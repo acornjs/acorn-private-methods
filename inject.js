@@ -8,14 +8,24 @@ module.exports = function (acorn) {
 
   const tt = acorn.tokTypes
 
-  const hashToken = new acorn.TokenType("#")
+  const privateNameToken = new acorn.TokenType("privateName")
+
+  function parsePrivateName() {
+    const node = this.startNode()
+    node.name = this.value
+    this.next()
+    this.finishNode(node, "PrivateName")
+    if (this.options.allowReserved == "never") this.checkUnreserved(node)
+    return node
+  }
 
   acorn.plugins.privateMethods = function (instance) {
     // Parse # token
     instance.extend("getTokenFromCode", superF => function (code) {
       if (code === 35) {
         ++this.pos
-        return this.finishToken(hashToken)
+        const word = this.readWord1()
+        return this.finishToken(privateNameToken, word)
       }
       return superF.call(this, code)
     })
@@ -51,11 +61,11 @@ module.exports = function (acorn) {
     })
 
     instance.extend("parsePropertyName", superF => function (prop) {
-      const isPrivate = this.options.ecmaVersion >= 8 && this._inClassMemberName && this.eat(hashToken)
+      const isPrivate = this.options.ecmaVersion >= 8 && this._inClassMemberName && this.type == privateNameToken
       this._inClassMemberName = false
-      const res = superF.call(this, prop)
-      if (!isPrivate) return res
-      if (prop.computed) this.raise(prop.start, "Private methods may not have computed names")
+      if (!isPrivate) return superF.call(this, prop)
+      prop.computed = false
+      prop.key = parsePrivateName.call(this)
       if (prop.key.name == "constructor") this.raise(prop.start, "Classes may not have a private method named constructor")
       const privateBoundNames = this._privateBoundNamesStack[this._privateBoundNamesStack.length - 1]
       if (Object.prototype.hasOwnProperty.call(privateBoundNames, prop.key.name) && !(prop.kind === "get" && privateBoundNames[prop.key.name] === "set") && !(prop.kind === "set" && privateBoundNames[prop.key.name] === "get")) this.raise(prop.start, "Duplicate private element")
@@ -74,9 +84,8 @@ module.exports = function (acorn) {
           node.object = base
           if (computed) {
             node.property = this.parseExpression()
-          } else if (this.eat(hashToken)) {
-            node.property = this.parseIdent(true)
-            node.property.type = "PrivateName"
+          } else if (this.type == privateNameToken) {
+            node.property = parsePrivateName.call(this)
             if (!this._privateBoundNamesStack.length || !this._privateBoundNamesStack[this._privateBoundNamesStack.length - 1][node.property.name]) {
               this._unresolvedPrivateNamesStack[this._unresolvedPrivateNamesStack.length - 1][node.property.name] = node.property.start
             }

@@ -30,12 +30,13 @@ describe("acorn-private-methods", function () {
   testFail("class A { #a() {}; f() { delete this.#a } }", "Private elements may not be deleted (1:25)")
   testFail("class A { #a() {}; #a() {} }", "Duplicate private element (1:19)")
   test("class A { get #a() {}; set #a(newA) {} }")
-  testFail("class A { a() { this.#a } }", "Usage of undeclared private name (1:22)")
-  testFail("class A { a() { this.#a } b() { this.#b } }", "Usage of undeclared private name (1:22)")
+  testFail("class A { a() { this.#a } }", "Usage of undeclared private name (1:21)")
+  testFail("class A { a() { this.#a } b() { this.#b } }", "Usage of undeclared private name (1:21)")
   testFail("class A { #constructor() {} }", "Classes may not have a private method named constructor (1:10)")
-  testFail("class A { #[ab]() {} }", "Private methods may not have computed names (1:10)")
+  testFail("class A { #[ab]() {} }", "Unexpected token (1:11)")
   testFail("a = { #ab() {} }", "Unexpected token (1:6)")
   testFail("class A { [{#ab() {}}]() {} }", "Unexpected token (1:12)")
+  testFail("class A{ # a() {}}", "Unexpected token (1:11)")
 
   const classes = [
     { text: "class A { %s }", ast: getBody => {
@@ -106,7 +107,7 @@ describe("acorn-private-methods", function () {
             computed: false,
             key: {
               type: "PrivateName",
-              start: body.end + 3,
+              start: body.end + 2,
               end: body.end + 4,
               name: "y"
             },
@@ -243,7 +244,7 @@ describe("acorn-private-methods", function () {
       computed: false,
       key: {
         type: "PrivateName",
-        start: start + 1,
+        start: start,
         end: start + 2,
         name: "x"
       },
@@ -273,7 +274,7 @@ describe("acorn-private-methods", function () {
       computed: false,
       key: {
         type: "PrivateName",
-        start: start + 5,
+        start: start + 4,
         end: start + 6,
         name: "x"
       },
