@@ -3,24 +3,22 @@
 const fs = require("fs")
 const path = require("path")
 const run = require("test262-parser-runner")
-const parse = require(".").parse
+const acorn = require("acorn")
+const privateMethods = require(".")
+const Parser = acorn.Parser.extend(privateMethods)
 
 const unsupportedFeatures = [
   "BigInt",
   "class-fields-private",
-  "class-fields-public",
-  "optional-catch-binding",
-  "regexp-lookbehind",
-  "regexp-named-groups",
-  "regexp-unicode-property-escapes"
+  "class-fields-public"
 ]
 
 const implementedFeatures = [
-  // See https://github.com/tc39/test262/issues/1343
+  "class-methods-private"
 ]
 
 run(
-  (content, options) => parse(content, {sourceType: options.sourceType, ecmaVersion: 9, plugins: { privateMethods: true }}),
+  (content, options) => Parser.parse(content, {sourceType: options.sourceType, ecmaVersion: 9}),
   {
     testsDirectory: path.dirname(require.resolve("test262/package.json")),
     skip: test => (!test.attrs.features || !implementedFeatures.some(f => test.attrs.features.includes(f)) || unsupportedFeatures.some(f => test.attrs.features.includes(f))),
