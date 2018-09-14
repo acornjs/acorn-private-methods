@@ -39,6 +39,8 @@ describe("acorn-private-methods", function () {
   testFail("a = { #ab() {} }", "Unexpected token (1:6)")
   testFail("class A { [{#ab() {}}]() {} }", "Unexpected token (1:12)")
   testFail("class A{ # a() {}}", "Unexpected token (1:11)")
+  testFail("class C{ #method() { super(); } };", "A class method that is not a constructor may not contain a direct super (1:21)")
+  test("class C{ #method() { super.y(); } };")
 
   const classes = [
     { text: "class A { %s }", ast: getBody => {

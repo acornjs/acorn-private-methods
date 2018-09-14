@@ -73,6 +73,14 @@ module.exports = function(Parser) {
       return prop.key
     }
 
+    parseClassMethod(method, isGenerator, isAsync) {
+      const oldInPrivateClassMethod = this._inPrivateClassMethod
+      this._inPrivateClassMethod = method.key.type == "PrivateName"
+      const ret = super.parseClassMethod(method, isGenerator, isAsync)
+      this._inPrivateClassMethod = oldInPrivateClassMethod
+      return ret
+    }
+
     // Parse private element access
     parseSubscripts(base, startPos, startLoc, noCalls) {
       for (let computed; ;) {
@@ -107,6 +115,13 @@ module.exports = function(Parser) {
         }
       }
       return _return
+    }
+
+    // Prohibit direct super in private methods
+    parseExprAtom(refDestructuringErrors) {
+      const atom = super.parseExprAtom(refDestructuringErrors)
+      if (this._inPrivateClassMethod && atom.type == "Super" && this.type == tt.parenL) this.raise(atom.start, "A class method that is not a constructor may not contain a direct super")
+      return atom
     }
   }
 }
