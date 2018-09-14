@@ -1,6 +1,8 @@
 "use strict"
 
-const {tokTypes: tt, TokenType} = require("acorn")
+const acorn = require("acorn")
+const tt = acorn.tokTypes
+const TokenType = acorn.TokenType
 
 const privateNameToken = new TokenType("privateName")
 
