@@ -8,24 +8,12 @@ It implements support for private methods, getters and setters as defined in the
 
 ## Usage
 
-You can use this module directly in order to get an Acorn instance with the plugin installed:
+This module provides a plugin that can be used to extend the Acorn `Parser` class:
 
 ```javascript
-var acorn = require('acorn-private-methods');
-```
-
-Or you can use `inject.js` for injecting the plugin into your own version of Acorn like this:
-
-```javascript
-var acorn = require('acorn-private-methods/inject')(require('./custom-acorn'));
-```
-
-Then, use the `plugins` option to enable the plugiin:
-
-```javascript
-var ast = acorn.parse(code, {
-  plugins: { privateMethods: true }
-});
+const {Parser} = require('acorn');
+const privateMethods = require('acorn-private-methods');
+Parser.extend(privateMethods).parse('class X { #a() {} }');
 ```
 
 ## License
