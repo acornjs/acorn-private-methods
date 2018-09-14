@@ -7,25 +7,24 @@ const Parser = acorn.Parser.extend(privateMethods)
 
 function test(text, expectedResult, additionalOptions) {
   it(text, function () {
-    const result = Parser.parse(text, Object.assign({ ecmaVersion: 9, plugins: { privateMethods: true } }, additionalOptions))
-    if (expectedResult) {
-      assert.deepEqual(result.body[0], expectedResult)
-    }
+    const result = Parser.parse(text, Object.assign({ ecmaVersion: 9 }, additionalOptions))
+    if (expectedResult) assert.deepStrictEqual(result.body[0], expectedResult)
   })
 }
-function testFail(text, expectedResult, additionalOptions) {
+function testFail(text, expectedError, additionalOptions) {
   it(text, function () {
     let failed = false
     try {
       Parser.parse(text, Object.assign({ ecmaVersion: 9, plugins: { privateMethods: true } }, additionalOptions))
     } catch (e) {
-      assert.equal(e.message, expectedResult)
+      assert.strictEqual(e.message, expectedError)
       failed = true
     }
     assert(failed)
   })
 }
 
+const newNode = (start, props) => Object.assign(new acorn.Node({options: {}}, start), props)
 describe("acorn-private-methods", function () {
   test("class A { a() { this.#a }; #a() {} }")
 
@@ -45,261 +44,226 @@ describe("acorn-private-methods", function () {
   const classes = [
     { text: "class A { %s }", ast: getBody => {
       const body = getBody(10)
-      return {
+      return newNode(0, {
         type: "ClassDeclaration",
-        start: 0,
         end: body.end + 2,
-        id: {
+        id: newNode(6, {
           type: "Identifier",
-          start: 6,
           end: 7,
           name: "A"
-        },
+        }),
         superClass: null,
-        body: {
+        body: newNode(8, {
           type: "ClassBody",
-          start: 8,
           end: body.end + 2,
           body: [body]
-        }
-      }
+        })
+      })
     } },
     { text: "class A { %s; }", ast: getBody => {
       const body = getBody(10)
-      return {
+      return newNode(0, {
         type: "ClassDeclaration",
-        start: 0,
         end: body.end + 3,
-        id: {
+        id: newNode(6, {
           type: "Identifier",
-          start: 6,
           end: 7,
           name: "A"
-        },
+        }),
         superClass: null,
-        body: {
+        body: newNode(8, {
           type: "ClassBody",
-          start: 8,
           end: body.end + 3,
           body: [body]
-        }
-      }
+        })
+      })
     } },
     { text: "class A { %s; #y() {} }", ast: getBody => {
       const body = getBody(10)
-      return {
+      return newNode(0, {
         type: "ClassDeclaration",
-        start: 0,
         end: body.end + 11,
-        id: {
+        id: newNode(6, {
           type: "Identifier",
-          start: 6,
           end: 7,
           name: "A"
-        },
+        }),
         superClass: null,
-        body: {
+        body: newNode(8, {
           type: "ClassBody",
-          start: 8,
           end: body.end + 11,
-          body: [body, {
+          body: [body, newNode(body.end + 2, {
             type: "MethodDefinition",
-            start: body.end + 2,
             end: body.end + 9,
             kind: "method",
             static: false,
             computed: false,
-            key: {
+            key: newNode(body.end + 2, {
               type: "PrivateName",
-              start: body.end + 2,
               end: body.end + 4,
               name: "y"
-            },
-            value: {
+            }),
+            value: newNode(body.end + 4, {
               type: "FunctionExpression",
-              start: body.end + 4,
               end: body.end + 9,
               id: null,
               generator: false,
               expression: false,
               async: false,
               params: [],
-              body: {
+              body: newNode(body.end + 7, {
                 type: "BlockStatement",
-                start: body.end + 7,
                 end: body.end + 9,
                 body: []
-              }
-            }
-          } ]
-        }
-      }
+              })
+            })
+          }) ]
+        })
+      })
     } },
     { text: "class A { %s;a() {} }", ast: getBody => {
       const body = getBody(10)
-      return {
+      return newNode(0, {
         type: "ClassDeclaration",
-        start: 0,
         end: body.end + 9,
-        id: {
+        id: newNode(6, {
           type: "Identifier",
-          start: 6,
           end: 7,
           name: "A"
-        },
+        }),
         superClass: null,
-        body: {
+        body: newNode(8, {
           type: "ClassBody",
-          start: 8,
           end: body.end + 9,
-          body: [ body, {
+          body: [ body, newNode(body.end + 1, {
             type: "MethodDefinition",
-            start: body.end + 1,
             end: body.end + 7,
             kind: "method",
             static: false,
             computed: false,
-            key: {
+            key: newNode(body.end + 1, {
               type: "Identifier",
-              start: body.end + 1,
               end: body.end + 2,
               name: "a"
-            },
-            value: {
+            }),
+            value: newNode(body.end + 2, {
               type: "FunctionExpression",
-              start: body.end + 2,
               end: body.end + 7,
               id: null,
               generator: false,
               expression: false,
               async: false,
               params: [],
-              body: {
+              body: newNode(body.end + 5, {
                 type: "BlockStatement",
-                start: body.end + 5,
                 end: body.end + 7,
                 body: []
-              }
-            }
-          } ]
-        }
-      }
+              })
+            })
+          }) ]
+        })
+      })
     } },
     { text: "class A { %s\na() {} }", ast: getBody => {
       const body = getBody(10)
-      return {
+      return newNode(0, {
         type: "ClassDeclaration",
-        start: 0,
         end: body.end + 9,
-        id: {
+        id: newNode(6, {
           type: "Identifier",
-          start: 6,
           end: 7,
           name: "A"
-        },
+        }),
         superClass: null,
-        body: {
+        body: newNode(8, {
           type: "ClassBody",
-          start: 8,
           end: body.end + 9,
           body: [
             body,
-            {
+            newNode(body.end + 1, {
               type: "MethodDefinition",
-              start: body.end + 1,
               end: body.end + 7,
               kind: "method",
               static: false,
               computed: false,
-              key: {
+              key: newNode(body.end + 1, {
                 type: "Identifier",
-                start: body.end + 1,
                 end: body.end + 2,
                 name: "a"
-              },
-              value: {
+              }),
+              value: newNode(body.end + 2, {
                 type: "FunctionExpression",
-                start: body.end + 2,
                 end: body.end + 7,
                 id: null,
                 generator: false,
                 expression: false,
                 async: false,
                 params: [],
-                body: {
+                body: newNode(body.end + 5, {
                   type: "BlockStatement",
-                  start: body.end + 5,
                   end: body.end + 7,
                   body: []
-                }
-              }
-            }
+                })
+              })
+            })
           ]
-        }
-      }
+        })
+      })
     } },
   ];
 
   [
-    { body: "#x() {}", passes: true, ast: start => ({
+    { body: "#x() {}", passes: true, ast: start => newNode(start, {
       type: "MethodDefinition",
-      start: start,
       end: start + 7,
       computed: false,
-      key: {
+      key: newNode(start, {
         type: "PrivateName",
-        start: start,
         end: start + 2,
         name: "x"
-      },
+      }),
       kind: "method",
       static: false,
-      value: {
+      value: newNode(start + 2, {
         type: "FunctionExpression",
-        start: start + 2,
         end: start + 7,
         async: false,
-        body: {
+        body: newNode(start + 5, {
+          type: "BlockStatement",
           body: [],
-          start: start + 5,
           end: start + 7,
-          type: "BlockStatement"
-        },
+        }),
         expression: false,
         generator: false,
         id: null,
         params: [],
-      }
+      })
     }) },
-    { body: "get #x() {}", passes: true, ast: start => ({
+    { body: "get #x() {}", passes: true, ast: start => newNode(start, {
       type: "MethodDefinition",
-      start: start,
       end: start + 11,
       computed: false,
-      key: {
+      key: newNode(start + 4, {
         type: "PrivateName",
-        start: start + 4,
         end: start + 6,
         name: "x"
-      },
+      }),
       kind: "get",
       static: false,
-      value: {
+      value: newNode(start + 6, {
         type: "FunctionExpression",
-        start: start + 6,
         end: start + 11,
         async: false,
-        body: {
+        body: newNode(start + 9, {
           body: [],
-          start: start + 9,
           end: start + 11,
           type: "BlockStatement"
-        },
+        }),
         expression: false,
         generator: false,
         id: null,
         params: [],
-      }
+      })
     }) },
 
   ].forEach(bodyInput => {
