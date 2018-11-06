@@ -38,7 +38,7 @@ describe("acorn-private-methods", function () {
   testFail("a = { #ab() {} }", "Unexpected token (1:6)")
   testFail("class A { [{#ab() {}}]() {} }", "Unexpected token (1:12)")
   testFail("class A{ # a() {}}", "Unexpected token (1:11)")
-  testFail("class C{ #method() { super(); } };", "A class method that is not a constructor may not contain a direct super (1:21)")
+  testFail("class C{ #method() { super(); } };", "super() call outside constructor of a subclass (1:21)")
   test("class C{ #method() { super.y(); } };")
 
   const classes = [
@@ -275,4 +275,5 @@ describe("acorn-private-methods", function () {
   })
 
   testFail("class C { \\u0061sync m(){} };", "Unexpected token (1:21)")
+  test("class A extends B { constructor() { super() } }")
 })

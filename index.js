@@ -49,10 +49,10 @@ module.exports = function(Parser) {
     }
 
     // Parse private methods
-    parseClassElement() {
+    parseClassElement(_constructorAllowsSuper) {
       const oldInClassMemberName = this._inClassMemberName
       this._inClassMemberName = true
-      const result = super.parseClassElement()
+      const result = super.parseClassElement.apply(this, arguments)
       this._inClassMemberName = oldInClassMemberName
       return result
     }
@@ -73,10 +73,10 @@ module.exports = function(Parser) {
       return prop.key
     }
 
-    parseClassMethod(method, isGenerator, isAsync) {
+    parseClassMethod(method, _isGenerator, _isAsync, _allowsDirectSuper) {
       const oldInPrivateClassMethod = this._inPrivateClassMethod
       this._inPrivateClassMethod = method.key.type == "PrivateName"
-      const ret = super.parseClassMethod(method, isGenerator, isAsync)
+      const ret = super.parseClassMethod.apply(this, arguments)
       this._inPrivateClassMethod = oldInPrivateClassMethod
       return ret
     }
@@ -118,6 +118,7 @@ module.exports = function(Parser) {
     }
 
     // Prohibit direct super in private methods
+    // FIXME: This is not necessary in acorn >= 6.0.3
     parseExprAtom(refDestructuringErrors) {
       const atom = super.parseExprAtom(refDestructuringErrors)
       if (this._inPrivateClassMethod && atom.type == "Super" && this.type == tt.parenL) this.raise(atom.start, "A class method that is not a constructor may not contain a direct super")
