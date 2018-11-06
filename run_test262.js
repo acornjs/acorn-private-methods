@@ -10,7 +10,10 @@ const Parser = acorn.Parser.extend(privateMethods)
 const unsupportedFeatures = [
   "BigInt",
   "class-fields-private",
-  "class-fields-public"
+  "class-fields-public",
+  "class-static-fields-public",
+  "class-static-fields-private",
+  "class-static-methods-private"
 ]
 
 const implementedFeatures = [
