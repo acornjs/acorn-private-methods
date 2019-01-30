@@ -27,6 +27,12 @@ function testFail(text, expectedError, additionalOptions) {
 const newNode = (start, props) => Object.assign(new acorn.Node({options: {}}, start), props)
 describe("acorn-private-methods", function () {
   test("class A { a() { this.#a }; #a() {} }")
+  test(`var C = class {
+  #m() { return 42; }
+  constructor() {
+    (() => this)().#m
+  }
+}`)
 
   testFail("class A { #a() {}; f() { delete this.#a } }", "Private elements may not be deleted (1:25)")
   testFail("class A { #a() {}; #a() {} }", "Duplicate private element (1:19)")

@@ -83,25 +83,53 @@ module.exports = function(Parser) {
 
     // Parse private element access
     parseSubscripts(base, startPos, startLoc, noCalls) {
+      let maybeAsyncArrow = this.options.ecmaVersion >= 8 && base.type === "Identifier" && base.name === "async" &&
+          this.lastTokEnd === base.end && !this.canInsertSemicolon() && this.input.slice(base.start, base.end) === "async"
       for (let computed; ;) {
         if ((computed = this.eat(tt.bracketL)) || this.eat(tt.dot)) {
           let node = this.startNodeAt(startPos, startLoc)
           node.object = base
           if (computed) {
             node.property = this.parseExpression()
+          // BEGIN diff to super.parseSubscripts()
           } else if (this.type == privateNameToken) {
             node.property = parsePrivateName.call(this)
             if (!this._privateBoundNamesStack.length || !this._privateBoundNamesStack[this._privateBoundNamesStack.length - 1][node.property.name]) {
               this._unresolvedPrivateNamesStack[this._unresolvedPrivateNamesStack.length - 1][node.property.name] = node.property.start
             }
+          // END diff to super.parseSubscripts()
           } else {
             node.property = this.parseIdent(true)
           }
           node.computed = Boolean(computed)
           if (computed) this.expect(tt.bracketR)
           base = this.finishNode(node, "MemberExpression")
+        } else if (!noCalls && this.eat(tt.parenL)) {
+          let refDestructuringErrors = {shorthandAssign: -1, trailingComma: -1, parenthesizedAssign: -1, parenthesizedBind: -1, doubleProto: -1}, oldYieldPos = this.yieldPos, oldAwaitPos = this.awaitPos
+          this.yieldPos = 0
+          this.awaitPos = 0
+          let exprList = this.parseExprList(tt.parenR, this.options.ecmaVersion >= 8, false, refDestructuringErrors)
+          if (maybeAsyncArrow && !this.canInsertSemicolon() && this.eat(tt.arrow)) {
+            this.checkPatternErrors(refDestructuringErrors, false)
+            this.checkYieldAwaitInDefaultParams()
+            this.yieldPos = oldYieldPos
+            this.awaitPos = oldAwaitPos
+            return this.parseArrowExpression(this.startNodeAt(startPos, startLoc), exprList, true)
+          }
+          this.checkExpressionErrors(refDestructuringErrors, true)
+          this.yieldPos = oldYieldPos || this.yieldPos
+          this.awaitPos = oldAwaitPos || this.awaitPos
+          let node = this.startNodeAt(startPos, startLoc)
+          node.callee = base
+          node.arguments = exprList
+          base = this.finishNode(node, "CallExpression")
+        } else if (this.type === tt.backQuote) {
+          let node = this.startNodeAt(startPos, startLoc)
+          node.tag = base
+          node.quasi = this.parseTemplate({isTagged: true})
+          base = this.finishNode(node, "TaggedTemplateExpression")
         } else {
-          return super.parseSubscripts(base, startPos, startLoc, noCalls)
+          return base
         }
       }
     }
