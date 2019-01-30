@@ -1,3 +1,7 @@
+## 0.2.2 (2019-01-30)
+
+* Fix parsing of chained subscripts
+
 ## 0.2.1 (2018-11-06)
 
 * Adapt to changes in acorn 6.0.3
