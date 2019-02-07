@@ -105,20 +105,26 @@ module.exports = function(Parser) {
           if (computed) this.expect(tt.bracketR)
           base = this.finishNode(node, "MemberExpression")
         } else if (!noCalls && this.eat(tt.parenL)) {
-          let refDestructuringErrors = {shorthandAssign: -1, trailingComma: -1, parenthesizedAssign: -1, parenthesizedBind: -1, doubleProto: -1}, oldYieldPos = this.yieldPos, oldAwaitPos = this.awaitPos
+          let refDestructuringErrors = {shorthandAssign: -1, trailingComma: -1, parenthesizedAssign: -1, parenthesizedBind: -1, doubleProto: -1}, oldYieldPos = this.yieldPos, oldAwaitPos = this.awaitPos, oldAwaitIdentPos = this.awaitIdentPos
           this.yieldPos = 0
           this.awaitPos = 0
+          this.awaitIdentPos = 0
           let exprList = this.parseExprList(tt.parenR, this.options.ecmaVersion >= 8, false, refDestructuringErrors)
           if (maybeAsyncArrow && !this.canInsertSemicolon() && this.eat(tt.arrow)) {
             this.checkPatternErrors(refDestructuringErrors, false)
             this.checkYieldAwaitInDefaultParams()
+            if (this.awaitIdentPos > 0) {
+              this.raise(this.awaitIdentPos, "Cannot use 'await' as identifier inside an async function")
+            }
             this.yieldPos = oldYieldPos
             this.awaitPos = oldAwaitPos
+            this.awaitIdentPos = oldAwaitIdentPos
             return this.parseArrowExpression(this.startNodeAt(startPos, startLoc), exprList, true)
           }
           this.checkExpressionErrors(refDestructuringErrors, true)
           this.yieldPos = oldYieldPos || this.yieldPos
           this.awaitPos = oldAwaitPos || this.awaitPos
+          this.awaitIdentPos = oldAwaitIdentPos || this.awaitIdentPos
           let node = this.startNodeAt(startPos, startLoc)
           node.callee = base
           node.arguments = exprList
