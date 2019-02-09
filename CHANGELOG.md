@@ -1,3 +1,7 @@
+## 0.3.0 (2019-02-09)
+
+* Require acorn >= 6.1.0
+
 ## 0.2.3 (2019-02-09)
 
 * Forbid binding await in async arrow function's parameter list

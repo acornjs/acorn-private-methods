@@ -24,7 +24,7 @@
   "dependencies": {
     "acorn-private-class-elements": "^0.1.0"
   },
-  "version": "0.2.3",
+  "version": "0.3.0",
   "devDependencies": {
     "acorn": "^6.1.0",
     "eslint": "^5.13.0",
