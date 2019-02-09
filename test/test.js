@@ -282,4 +282,5 @@ describe("acorn-private-methods", function () {
 
   testFail("class C { \\u0061sync m(){} };", "Unexpected token (1:21)")
   test("class A extends B { constructor() { super() } }")
+  testFail("class X { static #private() {} }", "Unexpected token (1:17)")
 })

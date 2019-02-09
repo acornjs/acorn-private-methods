@@ -16,7 +16,7 @@ module.exports = function(Parser) {
     }
 
     parsePropertyName(prop) {
-      const isPrivate = this.options.ecmaVersion >= 8 && this._inClassMemberName && this.type == this.privateNameToken
+      const isPrivate = this.options.ecmaVersion >= 8 && this._inClassMemberName && this.type == this.privateNameToken && !prop.static
       this._inClassMemberName = false
       if (!isPrivate) return super.parsePropertyName(prop)
       return this.parsePrivateClassElementName(prop)
