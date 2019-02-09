@@ -1,3 +1,7 @@
+## 0.2.3 (2019-02-09)
+
+* Forbid binding await in async arrow function's parameter list
+
 ## 0.2.2 (2019-01-30)
 
 * Fix parsing of chained subscripts
