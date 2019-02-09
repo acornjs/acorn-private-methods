@@ -39,7 +39,7 @@ describe("acorn-private-methods", function () {
   test("class A { get #a() {}; set #a(newA) {} }")
   testFail("class A { a() { this.#a } }", "Usage of undeclared private name (1:21)")
   testFail("class A { a() { this.#a } b() { this.#b } }", "Usage of undeclared private name (1:21)")
-  testFail("class A { #constructor() {} }", "Classes may not have a private method named constructor (1:10)")
+  testFail("class A { #constructor() {} }", "Classes may not have a private element named constructor (1:10)")
   testFail("class A { #[ab]() {} }", "Unexpected token (1:11)")
   testFail("a = { #ab() {} }", "Unexpected token (1:6)")
   testFail("class A { [{#ab() {}}]() {} }", "Unexpected token (1:12)")

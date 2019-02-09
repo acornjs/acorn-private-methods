@@ -19,11 +19,14 @@
     "lint": "eslint -c .eslintrc.json ."
   },
   "peerDependencies": {
-    "acorn": "^6.0.0"
+    "acorn": "^6.1.0"
+  },
+  "dependencies": {
+    "acorn-private-class-elements": "^0.1.0"
   },
   "version": "0.2.3",
   "devDependencies": {
-    "acorn": "^6.0.6",
+    "acorn": "^6.1.0",
     "eslint": "^5.12.1",
     "eslint-plugin-node": "^8.0.1",
     "mocha": "^5.2.0",
