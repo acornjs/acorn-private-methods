@@ -1,3 +1,11 @@
+## 0.3.1 (2020-04-22)
+
+* Don't parse static private methods
+* Don't allow private method access on `super`
+* Use injected acorn instance if available
+* Uses `Object.getPrototypeOf` if available instead of `__proto__`
+* Mark as compatible with acorn v7
+
 ## 0.3.0 (2019-02-09)
 
 * Require acorn >= 6.1.0
