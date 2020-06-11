@@ -1,3 +1,7 @@
+## 0.3.2 (2020-06-11)
+
+* Don't break acorn's optional chaining support
+
 ## 0.3.1 (2020-04-22)
 
 * Don't parse static private methods
