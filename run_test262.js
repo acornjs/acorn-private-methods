@@ -1,6 +1,5 @@
 "use strict"
 
-const fs = require("fs")
 const path = require("path")
 const run = require("test262-parser-runner")
 const acorn = require("acorn")
@@ -8,7 +7,6 @@ const privateMethods = require(".")
 const Parser = acorn.Parser.extend(privateMethods)
 
 const unsupportedFeatures = [
-  "BigInt",
   "class-fields-private",
   "class-fields-public",
   "class-static-fields-public",
@@ -21,10 +19,10 @@ const implementedFeatures = [
 ]
 
 run(
-  (content, options) => Parser.parse(content, {sourceType: options.sourceType, ecmaVersion: 9}),
+  (content, options) => Parser.parse(content, {sourceType: options.sourceType, ecmaVersion: 11}),
   {
     testsDirectory: path.dirname(require.resolve("test262/package.json")),
     skip: test => (!test.attrs.features || !implementedFeatures.some(f => test.attrs.features.includes(f)) || unsupportedFeatures.some(f => test.attrs.features.includes(f))),
-    whitelist: fs.readFileSync("./test262.whitelist", "utf8").split("\n").filter(v => v && v[0] !== "#")
+    whitelist: [],
   }
 )
