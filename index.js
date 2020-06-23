@@ -1,8 +1,6 @@
-"use strict"
+import privateClassElements from "acorn-private-class-elements";
 
-const privateClassElements = require("acorn-private-class-elements")
-
-module.exports = function(Parser) {
+export default function privateMethods(Parser) {
   const ExtendedParser = privateClassElements(Parser)
 
   return class extends ExtendedParser {

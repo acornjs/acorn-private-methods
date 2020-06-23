@@ -16,6 +16,14 @@ const privateMethods = require('acorn-private-methods');
 Parser.extend(privateMethods).parse('class X { #a() {} }');
 ```
 
+or as an ECMAScript Module:
+
+```javascript
+import {Parser} from 'acorn';
+import privateMethods from 'acorn-private-methods';
+Parser.extend(privateMethods).parse('class X { #a() {} }');
+```
+
 ## License
 
 This plugin is released under an [MIT License](./LICENSE).
