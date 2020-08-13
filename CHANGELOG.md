@@ -1,3 +1,8 @@
+## 0.3.3 (2020-08-13)
+
+* Migrate to ESM
+* Mark as compatible with acorn@8
+
 ## 0.3.2 (2020-06-11)
 
 * Don't break acorn's optional chaining support
