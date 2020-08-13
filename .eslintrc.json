@@ -5,6 +5,10 @@
     },
     "extends": ["eslint:recommended", "plugin:node/recommended"],
     "plugins": ["node"],
+    "overrides": [{
+      "files": ["rollup.config.js", "index.js"],
+      "parserOptions": { "sourceType": "module" }
+    }],
     "rules": {
         "accessor-pairs": "error",
         "array-bracket-newline": "off",

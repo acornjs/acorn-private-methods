@@ -1,5 +1,7 @@
-import privateClassElements from "acorn-private-class-elements";
+// eslint-disable-next-line node/no-unsupported-features/es-syntax
+import privateClassElements from "acorn-private-class-elements"
 
+// eslint-disable-next-line node/no-unsupported-features/es-syntax
 export default function privateMethods(Parser) {
   const ExtendedParser = privateClassElements(Parser)
 
