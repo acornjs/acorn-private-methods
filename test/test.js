@@ -105,7 +105,7 @@ describe("acorn-private-methods", function () {
             static: false,
             computed: false,
             key: newNode(body.end + 2, {
-              type: "PrivateName",
+              type: "PrivateIdentifier",
               end: body.end + 4,
               name: "y"
             }),
@@ -224,7 +224,7 @@ describe("acorn-private-methods", function () {
       end: start + 7,
       computed: false,
       key: newNode(start, {
-        type: "PrivateName",
+        type: "PrivateIdentifier",
         end: start + 2,
         name: "x"
       }),
@@ -250,7 +250,7 @@ describe("acorn-private-methods", function () {
       end: start + 11,
       computed: false,
       key: newNode(start + 4, {
-        type: "PrivateName",
+        type: "PrivateIdentifier",
         end: start + 6,
         name: "x"
       }),

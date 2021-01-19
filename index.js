@@ -16,7 +16,7 @@ export default function privateMethods(Parser) {
     }
 
     parsePropertyName(prop) {
-      const isPrivate = this.options.ecmaVersion >= 8 && this._inClassMemberName && this.type == this.privateNameToken && !prop.static
+      const isPrivate = this.options.ecmaVersion >= 8 && this._inClassMemberName && this.type == this.privateIdentifierToken && !prop.static
       this._inClassMemberName = false
       if (!isPrivate) return super.parsePropertyName(prop)
       return this.parsePrivateClassElementName(prop)
